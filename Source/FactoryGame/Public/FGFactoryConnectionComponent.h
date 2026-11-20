@@ -47,6 +47,10 @@ public:
 	/** Replication */
 	void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const;
 
+	// Begin UObject interface
+	virtual void PostInitProperties() override;
+	// End UObject interface
+
 	// Begin ActorComponent interface
 	virtual void OnComponentDestroyed( bool isDestroyingHierarchy ) override;
 	virtual void OnRegister() override;
@@ -222,6 +226,11 @@ public:
 		const TSet< class UFGFactoryConnectionComponent* >& ignoredConnections = {} );
 
 private:
+	friend struct FFGFactoryConnectionStates;
+
+	/** Pushes mHasConnectedComponent to an owner that replicates it. Server only. */
+	void UpdateOwnerConnectedState() const;
+
 	/**
 	 * Checks if a connection is blocked by another connection in a list of building overlaps.
 	 * If not blocked it returns null, if blocked it returns the blocking connection.
@@ -243,7 +252,7 @@ protected:
 	UPROPERTY( SaveGame )
 	TObjectPtr<class UFGFactoryConnectionComponent> mConnectedComponent;
 
-	/** Light-weight connected indication for clients. */
+	/** Light-weight connected indication for clients. Replicated by the owner instead if it's an IFGFactoryConnectionStateOwner. */
 	UPROPERTY( Replicated )
 	bool mHasConnectedComponent;
 

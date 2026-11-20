@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
 #include "FactoryGame.h"
@@ -105,8 +105,8 @@ public:
 	// CLIENT ONLY - Called when we receive a bulk data update from the conveyor chain RCO to create and apply item ranges
 	void NetUpdateBuildItemsFromRanges(int32 numItems, const TArray< FConveyorItemDescRange >& descRanges, const TArray< FConveyorItemSpacingRange >& spacingRanges, int32 currentRemovalIndex, int32 currentAdditionIndex );
 
-	// CLIENT ONLY - When delta rep detects this chain is too far out of sync it needs a full rebuild
-	void MarkChainForItemUpdate();
+	// CLIENT ONLY - When delta rep detects this chain is too far out of sync it needs a full rebuild. Returns true if the chain was newly queued for one
+	bool MarkChainForItemUpdate();
 	
 	// Returns the number of items in a given segment
 	int32 GetNumItemsInSegment(const FConveyorChainSplineSegment& splineSegment ) const;
@@ -186,6 +186,8 @@ public:
 
 	// Adds an entry to the connection map so we know where to pick up when DeltaSerialization takes over the replication
 	void AddConnectionEntryForItemStateIndices( UNetConnection* connection );
+	// Same as above, but picks up from the given indices (the ones a client's item snapshot was taken at) instead of the current ones
+	void AddConnectionEntryForItemStateIndices( UNetConnection* connection, int32 removalIndex, int32 additionIndex );
 	// Clears an entry into the connection map. Used when a chain actor is net culled so we don't attempt to replicate deltas
 	void RemoveConnectionEntryForItemStateIndices( UNetConnection* connection );
 
@@ -210,6 +212,10 @@ public:
 
 	// Updates any monitors that are tracking item throughput
 	void UpdateAttachedMonitors( float deltaTime );
+	
+	float CalculateLengthWithoutLifts();
+	void SetLengthWithoutLifts( float length ) { mLengthWithoutLifts = length; }
+	void SetNetCullDistanceFromLength();
 	
 private:
 	void DebugDrawChainInfo();
@@ -258,6 +264,10 @@ private:
 
 	UPROPERTY( Replicated)
 	float mTotalLength;
+	
+	// Used to determine per actor cull distance (we don't want to take Z into account)
+	UPROPERTY( SaveGame )
+	float mLengthWithoutLifts;
 
 	// Index of the item at the front of the line - Inclusive
 	UPROPERTY( )

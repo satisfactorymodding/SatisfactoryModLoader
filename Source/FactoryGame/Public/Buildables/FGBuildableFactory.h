@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGBuildable.h"
 #include "FGSignificanceInterface.h"
+#include "FGFactoryConnectionStateOwner.h"
 #include "FGBuildableFactory.generated.h"
 
 class UFGPipeConnectionComponent;
@@ -24,7 +25,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam( FBuildingCurrentPotentialChanged, float );
  * @todorefactor Comments about the Factory_ and non factory code.
  */
 UCLASS( Abstract )
-class FACTORYGAME_API AFGBuildableFactory : public AFGBuildable, public IFGSignificanceInterface, public IFGConditionalReplicationInterface
+class FACTORYGAME_API AFGBuildableFactory : public AFGBuildable, public IFGSignificanceInterface, public IFGConditionalReplicationInterface, public IFGFactoryConnectionStateOwner
 {
 	GENERATED_BODY()
 public:
@@ -33,6 +34,10 @@ public:
 	// Begin UObject interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	// End UObject interface
+
+	// Begin IFGFactoryConnectionStateOwner
+	virtual void SetFactoryConnectionConnected( const UFGFactoryConnectionComponent* connection, bool isConnected ) override;
+	// End IFGFactoryConnectionStateOwner
 	
 	// Begin AActor interface
 	virtual void BeginPlay() override;
@@ -806,10 +811,16 @@ protected:
 	/** Audio component playing the alien overclocking audio */
 	UPROPERTY( BlueprintReadWrite, Category = "Alien Overclocking" )
 	TObjectPtr<UAkComponent> mAlienOverClockingLayerSFXComponent;
-private:	
+private:
 	/** Caching all skeletal meshes so that we can set tick optimizations later from significance manager */
 	UPROPERTY()
 	TArray< TObjectPtr<USkeletalMeshComponent> > mCachedSkeletalMeshes;
+
+	UFUNCTION()
+	void OnRep_FactoryConnectionStates();
+
+	UPROPERTY( ReplicatedUsing = OnRep_FactoryConnectionStates )
+	FFGFactoryConnectionStates mFactoryConnectionStates;
 protected:
 	/** The range to keep the factory in significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )

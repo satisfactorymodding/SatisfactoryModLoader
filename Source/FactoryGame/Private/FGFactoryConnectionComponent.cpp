@@ -19,6 +19,7 @@ void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGFactoryConnectionComponent, mHasConnectedComponent);
 }
+void UFGFactoryConnectionComponent::PostInitProperties(){ Super::PostInitProperties(); }
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister(); }
 void UFGFactoryConnectionComponent::OnUnregister(){ Super::OnUnregister(); }
@@ -38,6 +39,7 @@ bool UFGFactoryConnectionComponent::Factory_Internal_PeekOutputInventory(TArray<
 bool UFGFactoryConnectionComponent::Factory_Internal_GrabOutputInventory(FInventoryItem& out_item, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 void UFGFactoryConnectionComponent::DisplayDebug(int32 connectionIndex,  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void UFGFactoryConnectionComponent::SortComponentList(TInlineComponentArray< UFGFactoryConnectionComponent* >& io_components){ }
+void UFGFactoryConnectionComponent::UpdateOwnerConnectedState() const{ }
 uint8 UFGFactoryConnectionComponent::MaxNumGrab(float delta) const{ return uint8(); }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindCompatibleOverlappingConnections( UFGFactoryConnectionComponent* component,
 		const FVector& location,

@@ -51,12 +51,14 @@ void AFGBuildableConveyorBase::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGBuildableConveyorBase, mConveyorChainActor);
 	DOREPLIFETIME(AFGBuildableConveyorBase, mChainSegmentIndex);
 	DOREPLIFETIME(AFGBuildableConveyorBase, mAttachedThroughputMonitors);
+	DOREPLIFETIME(AFGBuildableConveyorBase, mFactoryConnectionStates);
 }
 void AFGBuildableConveyorBase::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableConveyorBase::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableConveyorBase::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableConveyorBase::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildableConveyorBase::Tick(float dt){ Super::Tick(dt); }
+void AFGBuildableConveyorBase::SetFactoryConnectionConnected(const UFGFactoryConnectionComponent* connection, bool isConnected){ }
 void AFGBuildableConveyorBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableConveyorBase::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGBuildableConveyorBase::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
@@ -65,6 +67,7 @@ bool AFGBuildableConveyorBase::IsUseable_Implementation() const{ return bool(); 
 void AFGBuildableConveyorBase::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildableConveyorBase::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGBuildableConveyorBase::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
+void AFGBuildableConveyorBase::GetDependantHighPriorityReplicationActors_Implementation(TArray<AActor*>& out_dependantActors){ }
 bool AFGBuildableConveyorBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildableConveyorBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 bool AFGBuildableConveyorBase::ShouldBlockGuidelinePathForHologram(const  AFGHologram* hologram) const{ return bool(); }
@@ -94,3 +97,4 @@ void AFGBuildableConveyorBase::OnRep_ChainInformation(){ }
 void AFGBuildableConveyorBase::PlayPickupFX(int32 itemIndex) const{ }
 void AFGBuildableConveyorBase::Factory_DequeueItem(){ }
 void AFGBuildableConveyorBase::Factory_EnqueueItem(const FInventoryItem& item, float initialOffset){ }
+void AFGBuildableConveyorBase::OnRep_FactoryConnectionStates(){ }

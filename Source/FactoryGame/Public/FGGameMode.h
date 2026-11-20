@@ -144,6 +144,7 @@ public:
 	virtual void GenericPlayerInitialization(AController* C) override;
 	virtual bool IsPaused() const override;
 	virtual void InitStartSpot_Implementation(AActor* StartSpot, AController* NewPlayer) override;
+	virtual void GameWelcomePlayer(UNetConnection* Connection, FString& RedirectURL) override;
 	// End AGameModeBase interface
 
 	/** All actors initialized, notify the save system */

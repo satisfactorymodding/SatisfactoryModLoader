@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
 #include "FactoryGame.h"
@@ -69,14 +69,30 @@ namespace ConveyorChainNetHelpers
 	// We work down and if its just exceptionally long it will get spawned a AFGConveyorChainActor_NoCull which will not reasonably net cull
 	constexpr float ChainRepCullDist_Small = 20000.f;
 	constexpr float ChainRepCullDist_Medium = 50000.f;
-	constexpr float ChainRepCullDist_Large = 100000.f;
-	constexpr float ChainRepCullDist_Huge = 300000.f;
+	constexpr float ChainRepCullDist_Large = 80000.f;
+	constexpr float ChainRepCullDist_Huge = 150000.f;
 	constexpr float ChainRepCullDist_NoCull = 1000000.f; // Just really big so it doesn't cull. May decide to move this to an always relevant node instead
 
 	constexpr uint16 MAX_SIZE_NumRemovals = MAX_uint16;
 	constexpr uint16 MAX_SIZE_RemovalDeltaTime = MAX_uint16; 
 	constexpr uint16 MAX_SIZE_NumAdditions = MAX_uint16;
 	constexpr uint16 MAX_SIZE_AdditionDeltaTime = MAX_uint16;
+
+	// Perhaps not the most versatile approach but how this works is:
+	// When a ConveyorChain is spawned the speed of its slowest belt is used to determine a multiplier
+	// that is used to scale the ActorRepInfo replication period frame on the PerActorRepInfo that defines each actors replication period frame.
+	// On BeginPlay the ChainSubsystem loads an array of all belt speeds. Then when a chain is spawned the speed of its slowest belt is passed to a function 
+	// in the ChainSubsystem to determine its modified RepPeriodFrame (ie. A value from the defined array below). This is then set as the value of the actors NetPriority.
+	//
+	// Note: We're reusing NetPriority here to avoid adding a new property to AActor. This is okay because the only time we are relying on the NetPriority value 
+	// to derive a value in the repGraph for its replication period is when there is no specified ActorClassData. 
+	// Any actor attempting to use this method of PerActor specific replication period (ie. Not relying solely on the class type for Rep specification) 
+	// must specifically set and apply a ActorClassInfo with its bUseActorNetPriorityAsPerActorFrameScaler set to true.
+	//
+	// Note2: If the index in the Conveyor Speed array on the subsystem is greater than the size of the below multiplier array 
+	// we just use the last value (which is the fastest we can rep anyway so any new chains that are even faster than MK6 (I really hope this doesn't happen)
+	// will be set to the Last value.
+	const TArray< float > RepFrameMultiplierTiers{ 10.f, 8.f, 6.f, 4.f, 2.f, 1.f };
 }
 
 USTRUCT()
@@ -300,6 +316,8 @@ public:
 	/** Called from postload to set the speed of the seg. This isn't saved since belt speeds theoretically can change so we apply on load from our conveyor */
 	FORCEINLINE void SetSpeed( float inSpeed ) { Speed = inSpeed; } 
 	
+	/** Get The length of just this spline seg */
+	FORCEINLINE float GetLength() const { return EndsAtLength - StartsAtLength; }
 public:
 	UPROPERTY()
 	TObjectPtr<class AFGConveyorChainActor> ChainActor = nullptr;

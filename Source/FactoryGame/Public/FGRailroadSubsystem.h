@@ -120,6 +120,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad", DisplayName = "GetRailroadSubsystem", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGRailroadSubsystem* Get( UObject* worldContext );
 
+	/** CLIENT ONLY - Called when a train's server simulation state is received. Updates the estimate of the offset between the client's and the server's clock. */
+	void OnServerSimulationStateReceived( double serverTime, double receiveTime );
 
 
 	/***************************************************************************************************
@@ -575,6 +577,17 @@ public:
 	float mClientSimulationServerVelocityBlend = 0.5f;
 	/** How much corrective velocity to blend in per second. [0, 1] */
 	float mClientSimulationCorrectionVelocityBlend = 0.8f;
+	/**
+	 * How slowly the estimated client to server clock offset follows states that arrived later than the fastest ones. [s]
+	 * Late arrivals are mostly delivery jitter, so this keeps the estimate steady while still following real latency changes and clock drift.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Client Simulation" )
+	float mClientServerTimeOffsetRiseTime = 5.f;
+
+	/** CLIENT ONLY - Client clock minus server clock (plus the fastest delivery time seen), see OnServerSimulationStateReceived. [s] */
+	double mServerTimeOffset = 0.0;
+	double mLastServerTimeSampleTime = 0.0;
+	bool mHasServerTimeOffset = false;
 	
 	/** Whether or not trains should derail when exiting tracks. */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Railroad" )

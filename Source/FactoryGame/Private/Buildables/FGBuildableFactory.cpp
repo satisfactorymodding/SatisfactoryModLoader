@@ -75,7 +75,10 @@ void AFGBuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGBuildableFactory, mHasPower);
 	DOREPLIFETIME(AFGBuildableFactory, mIsOverclocked);
 	DOREPLIFETIME(AFGBuildableFactory, mIsAlienOverclocked);
+	DOREPLIFETIME(AFGBuildableFactory, mFactoryConnectionStates);
 }
+void AFGBuildableFactory::SetFactoryConnectionConnected(const UFGFactoryConnectionComponent* connection, bool isConnected){ }
+void AFGBuildableFactory::OnRep_FactoryConnectionStates(){ }
 void AFGBuildableFactory::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableFactory::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableFactory::Tick(float dt){ Super::Tick(dt); }

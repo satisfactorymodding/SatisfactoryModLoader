@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 #include "FactoryGame.h"
@@ -224,6 +224,31 @@ public:
 
 	UPROPERTY()
 	bool HasPendingSegmentClientRequest = false;
+
+	// --- Begin Server Relay Pacing (server only)
+	/** Answers the parked requests that can be answered now. Called when a request arrives and from the chain subsystem's server tick */
+	void TryAnswerParkedRequests();
+
+	/** True while the responses already sent to this client have used up the relay's share of the connection's bandwidth */
+	bool IsRelayOverBudget() const;
+
+	/**
+	 * The client only ever has one item and one segment request in flight, so each is parked here until it can be answered.
+	 * Item requests wait for the client's initial net load to complete: until then the replication graph doesn't replicate the chains to it,
+	 * so the per connection delta base of a snapshot sent now would stay frozen and the chain's item rings would wrap before the deltas resume.
+	 * Both wait while the relay is over its bandwidth share, so the responses can't starve the chain deltas.
+	 */
+	TArray< TWeakObjectPtr<AFGConveyorChainActor> > mParkedItemRequestChains;
+	bool mHasParkedItemRequest = false;
+	TArray< TWeakObjectPtr<AFGConveyorChainActor> > mParkedSegmentRequestChains;
+	bool mHasParkedSegmentRequest = false;
+
+	/** Bytes the relay may still send to this client. Refilled from the connection's rate by the chain subsystem's server tick */
+	float mRelayByteCredit = 0.f;
+
+	/** Size of the response last serialized for this client, so it can be charged against the credit */
+	int32 mLastResponseBytes = 0;
+	// --- End Server Relay Pacing
 };
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FGetAdditionalConveyorItemDescriptors, UWorld* /* worldContext */, TSet<TSubclassOf<UFGItemDescriptor>>& /* out_itemDescriptors */);
@@ -262,7 +287,11 @@ public:
 	void NotifyChainReceivedItemUpdate( AFGConveyorChainActor* chainActor );
 	void NotifyChainNeedsSegmentUpdate( AFGConveyorChainActor* ChainActor );
 	void NotifyChainReceiveSegmentUpdate( AFGConveyorChainActor* chainActor );
-	void NotifyChainNeedsItemUpdate( AFGConveyorChainActor* ChainActor );
+	/** Queues a full item update (a reset). Returns false if the chain is already queued or part of the request in flight */
+	bool NotifyChainNeedsItemUpdate( AFGConveyorChainActor* ChainActor );
+
+	/** CLIENT ONLY - Called once an item response is read. Puts the requested chains the response didn't complete back in the queue */
+	void OnClientItemResponseProcessed( UFGConveyorChainRemoteCallObject* chainRCO );
 
 
 	/**
@@ -321,6 +350,9 @@ public:
 	/** Returns a full list of item descriptors used for looking up indices on the client */
 	FORCEINLINE const TArray<TSubclassOf<UFGItemDescriptor>>& GetItemDescriptorLookup() const { return mAllItemDescriptors; }
 
+	float GetNetActorFrequencyFromBeltSpeed( float slowestBeltSpeed );
+	
+public:
 	/** Delegate that can be bound to register additional item descriptors that are not known to the Asset Registry as being able to be on conveyor belts */
 	static FGetAdditionalConveyorItemDescriptors GetAdditionalItemDescriptors;
 private:
@@ -337,8 +369,14 @@ private:
 		// This is the default value in spline components in general and is what it would use if we didn't change it via settings
 		return 10;
 	}
-	
-	
+
+	/** SERVER ONLY - Refills each client's relay credit and answers the requests parked on their remote call objects */
+	void TickServerRelay( float deltaSeconds );
+
+	/** CLIENT ONLY - Logs how long the item relay took to drain once it's empty again */
+	void TrackClientItemRelayDrain();
+
+
 private:
 	// The number or settings that correspond to a quality setting in the GameUserSettings
 	static const inline TArray<int32> mReparamStepQualitySettings = { 5, 10, 20, 50 };
@@ -388,6 +426,13 @@ private:
 	
 	UPROPERTY()
 	TArray< TSubclassOf< UFGItemDescriptor > > mAllItemDescriptors;
+	
+	UPROPERTY()
+	TArray< float > mAllConveyorSpeeds;
 
+	/** CLIENT ONLY - When the item relay started being busy (negative while idle) and what it did since, for the drain log */
+	double mItemRelayBusySince = -1.0;
+	int32 mItemRelayChainsUpdated = 0;
+	int32 mItemRelayResets = 0;
 };
 

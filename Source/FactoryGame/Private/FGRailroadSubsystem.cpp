@@ -27,6 +27,7 @@ AFGRailroadSubsystem::AFGRailroadSubsystem() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGRailroadSubsystem::Init(){ }
+void AFGRailroadSubsystem::OnServerSimulationStateReceived(double serverTime, double receiveTime){ }
 void AFGRailroadSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGRailroadSubsystem, mTrainStationIdentifiers);

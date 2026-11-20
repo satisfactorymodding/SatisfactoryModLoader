@@ -9,6 +9,7 @@
 #include "FGSignificanceInterface.h"
 #include "FGConveyorItem.h"
 #include "FGFactoryConnectionComponent.h"
+#include "FGFactoryConnectionStateOwner.h"
 #include "FGBuildableConveyorBase.generated.h"
 
 
@@ -94,7 +95,7 @@ extern bool GIsConveyorFreezingEnabled;
  * Responsible for common logic such as the factory ticking, replication, interactions etc.
  */
 UCLASS(Abstract)
-class FACTORYGAME_API AFGBuildableConveyorBase : public AFGBuildable, public IFGSignificanceInterface
+class FACTORYGAME_API AFGBuildableConveyorBase : public AFGBuildable, public IFGSignificanceInterface, public IFGFactoryConnectionStateOwner
 {
 	GENERATED_BODY()
 public:
@@ -109,6 +110,10 @@ public:
 	virtual void Tick( float dt ) override;
 	// End AActor interface
 
+	// Begin IFGFactoryConnectionStateOwner
+	virtual void SetFactoryConnectionConnected( const UFGFactoryConnectionComponent* connection, bool isConnected ) override;
+	// End IFGFactoryConnectionStateOwner
+
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFGSaveInterface
@@ -121,6 +126,7 @@ public:
 	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state  ) override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
+	virtual void GetDependantHighPriorityReplicationActors_Implementation( TArray< AActor* >& out_dependantActors ) override;
 	// End IFGUseableInterface
 	
 	// Begin AFGBuildable interface
@@ -409,6 +415,12 @@ protected:
 	bool mIsConveyorLift = false;
 	
 private:
+	UFUNCTION()
+	void OnRep_FactoryConnectionStates();
+
+	UPROPERTY( ReplicatedUsing = OnRep_FactoryConnectionStates )
+	FFGFactoryConnectionStates mFactoryConnectionStates;
+
 	int16 mLastItemsDirtyKey = -2;
 
 	/** Clearance data generated upon request for this conveyor. */

@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableConveyorAttachment.h"
 #include "FGInventoryComponent.h"
 #include "Hologram/FGConveyorAttachmentHologram.h"
+#include "Net/UnrealNetwork.h"
 
 TSubclassOf<UFGRecipe> UFGHologramOverride_ConveyorAttachment_FloorToLift::GetHologramOverride_Implementation(const AFGHologram* hologram, const FHitResult& hitResult) const{ return nullptr; }
 TSubclassOf<UFGRecipe> UFGHologramOverride_ConveyorAttachment_LiftToFloor::GetHologramOverride_Implementation(const AFGHologram* hologram, const FHitResult& hitResult) const{ return nullptr; }
@@ -12,7 +13,13 @@ AFGBuildableConveyorAttachment::AFGBuildableConveyorAttachment() : Super() {
 	this->mHologramClass = AFGConveyorAttachmentHologram::StaticClass();
 	this->NetDormancy = ENetDormancy::DORM_DormantAll;
 }
+void AFGBuildableConveyorAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableConveyorAttachment, mFactoryConnectionStates);
+}
 void AFGBuildableConveyorAttachment::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableConveyorAttachment::SetFactoryConnectionConnected(const UFGFactoryConnectionComponent* connection, bool isConnected){ }
+void AFGBuildableConveyorAttachment::OnRep_FactoryConnectionStates(){ }
 bool AFGBuildableConveyorAttachment::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
 void AFGBuildableConveyorAttachment::Dismantle_Implementation(){ }
 bool AFGBuildableConveyorAttachment::CanBeSampled_Implementation() const{ return Super::CanBeSampled_Implementation(); }

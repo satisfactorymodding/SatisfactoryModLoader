@@ -14,6 +14,7 @@ void UFGReplicationGraph::RouteRemoveNetworkActorToNodes(const FNewReplicatedAct
 void UFGReplicationGraph::NotifyActorDormancyChange(AActor* Actor, ENetDormancy OldDormancyState){ }
 void UFGReplicationGraph::AddNetworkActor(AActor* Actor){ }
 void UFGReplicationGraph::InitClassReplicationInfo( FClassReplicationInfo& classInfo, UClass* inClass, bool isSpatialized, int32 NetServerMaxTickRate){ }
+float UFGReplicationGraph::GetGridCullDistance_Debug(AActor* actor) const{ return float(); }
 void UFGReplicationGraph::RegisterCustomClassRepPolicy(TSoftClassPtr<AActor> inActor, EClassRepPolicy inRepPolicy){ }
 void UFGReplicationGraph::OnTrainReplicationActorAdded( AFGTrainReplicationActor* replicationActor){ }
 void UFGReplicationGraph::OnTrainReplicationActorRemoved( AFGTrainReplicationActor* replicationActor){ }
@@ -41,9 +42,14 @@ void UFGReplicationGraphNode_ConditionallyAlwaysRelevant::NotifyResetAllNetworkA
 UFGReplicationGraphNode_PlayerStateFrequencyLimiter::UFGReplicationGraphNode_PlayerStateFrequencyLimiter() : Super() {
 
 }
+void UFGReplicationGraphNode_PlayerStateFrequencyLimiter::NotifyAddNetworkActor(const FNewReplicatedActorInfo& ActorInfo){ }
+bool UFGReplicationGraphNode_PlayerStateFrequencyLimiter::NotifyRemoveNetworkActor(const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound){ return bool(); }
 void UFGReplicationGraphNode_PlayerStateFrequencyLimiter::GatherActorListsForConnection(const FConnectionGatherActorListParameters& Params){ }
 void UFGReplicationGraphNode_PlayerStateFrequencyLimiter::PrepareForReplication(){ }
 void UFGReplicationGraphNode_PlayerStateFrequencyLimiter::LogNode(FReplicationGraphDebugInfo& DebugInfo, const FString& NodeName) const{ }
+void UFGReplicationGraphNode_PlayerStateFrequencyLimiter::BindForceNetUpdateDelegate(const FActorRepListType& actor, FGlobalActorReplicationInfo& globalActorInfo){ }
+void UFGReplicationGraphNode_PlayerStateFrequencyLimiter::UnbindForceNetUpdateDelegate(const FActorRepListType& actor, FGlobalActorReplicationInfo& globalActorInfo){ }
+void UFGReplicationGraphNode_PlayerStateFrequencyLimiter::ForceNetUpdateEvent(FActorRepListType actor, FGlobalActorReplicationInfo& globalInfo){ }
 void UFGReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorListsForConnection(const FConnectionGatherActorListParameters& Params){ }
 void UFGReplicationGraphNode_AlwaysRelevant_ForConnection::OnLevelVisibilityAdd(FName levelName, UWorld* world){ }
 void UFGReplicationGraphNode_AlwaysRelevant_ForConnection::OnLevelVisibilityRemove(FName levelName){ }

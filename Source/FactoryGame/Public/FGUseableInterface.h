@@ -170,4 +170,12 @@ class FACTORYGAME_API IFGUseableInterface
 	/** Called from widgets that are opened by the use functionality */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Use" )
 	void UnregisterInteractingPlayer( class AFGCharacterPlayer* player );
+	
+	/** Called from the player controller (originating from the Replication Graph) for gathering high priority replication actors. 
+	 * If this useable is the best useable actor for a player this is called to add any additional actors to the high priority 
+	 * replication list in the (CSS modified) replication graph. 
+	 * Example Use: ConveyorBelts add  their representative ConveyorChain to have high rep priority
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
+	void GetDependantHighPriorityReplicationActors( TArray< AActor* >& out_dependantActors );
 };

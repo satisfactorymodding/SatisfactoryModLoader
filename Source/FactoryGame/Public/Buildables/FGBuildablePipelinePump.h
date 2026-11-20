@@ -199,6 +199,10 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
 	TObjectPtr<class UAkAudioEvent> mStopPipelineEngineSound;
 
+	/** In Milliseconds */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	float mFlushDormancyEvery = 1000.f;
+	
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
 	float mUpdateAudioFlowTime;
 
@@ -209,6 +213,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAkComponent> mPlayPipePistonsComponent;
 
+	float mTimeSinceLastNetFlush;
+	
 	float mLastFlowUpdate;
 	float mCurrentAudioHeadlift;
 
