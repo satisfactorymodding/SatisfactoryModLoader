@@ -21,6 +21,39 @@ static FUObjectAnnotationSparse<FConnectionSMLSupport, true> GConnectionMetadata
 
 static FString GSML_HELLO = TEXT("SML_HELLO");
 
+static UChannel* GetControlChannel(UNetConnection* Connection) {
+    if (!Connection) {
+        return nullptr;
+    }
+    static UClass* ControlChannelClass = FindObjectChecked<UClass>(nullptr, TEXT("/Script/Engine.ControlChannel"));
+    static const FArrayProperty* OpenChannelsProp = CastField<FArrayProperty>(
+        UNetConnection::StaticClass()->FindPropertyByName(TEXT("OpenChannels"))
+    );
+    if (OpenChannelsProp) {
+        if (const TArray<TObjectPtr<UChannel>>* OpenChannels = OpenChannelsProp->ContainerPtrToValuePtr<TArray<TObjectPtr<UChannel>>>(Connection)) {
+            for (const TObjectPtr<UChannel>& Channel : *OpenChannels) {
+                if (Channel && Channel->IsA(ControlChannelClass)) {
+                    return Channel.Get();
+                }
+            }
+        }
+    }
+    return nullptr;
+}
+
+template<int32 Index, typename... ParamTypes>
+static void SendControlMessage(UNetConnection* Conn, ParamTypes&... Params) {
+    static_assert(Index < 256, "Control channel message must be a byte.");
+    UChannel* ControlChannel = GetControlChannel(Conn);
+    if (ControlChannel != nullptr && !ControlChannel->Closing) {
+        FControlChannelOutBunch Bunch(ControlChannel, false);
+        uint8 MessageType = Index;
+        Bunch << MessageType;
+        (Bunch << ... << Params);
+        ControlChannel->SendBunch(&Bunch, true);
+    }
+}
+
 FMessageEntry& UModNetworkHandler::RegisterMessageType(const FMessageType& MessageType) {
     UE_LOG(LogModNetworkHandler, Display, TEXT("Registering message type %s:%d"), *MessageType.ModReference, MessageType.MessageId);
     TMap<int32, FMessageEntry>& ModEntries = MessageHandlers.FindOrAdd(MessageType.ModReference);
@@ -41,13 +74,13 @@ void UModNetworkHandler::CloseWithFailureMessage(UNetConnection* Connection, con
 
         // Build a fake NMT_Failure bunch, only needs to contain a string.
         // We don't need to handle byte swapping, the Bunches handle that themselves.
-        FControlChannelOutBunch Bunch(Connection->Channels[0], false);
+        FControlChannelOutBunch Bunch(GetControlChannel(Connection), false);
         Bunch << MutableMessage;
         FInBunch InBunch(Connection, Bunch.GetData(), Bunch.GetNumBits());
         Connection->GetDriver()->Notify->NotifyControlMessage(Connection, NMT_Failure, InBunch);
     } else {
         // We are the server. Send NMT_Failure with the message to the client.
-        FNetControlMessage<NMT_Failure>::Send(Connection, MutableMessage);
+        SendControlMessage<NMT_Failure>(Connection, MutableMessage);
         Connection->FlushNet(true);
     }
 }
@@ -55,7 +88,7 @@ void UModNetworkHandler::CloseWithFailureMessage(UNetConnection* Connection, con
 void UModNetworkHandler::SendMessage(UNetConnection* Connection, FMessageType MessageType, FString Data) {
     FConnectionSMLSupport ConnectionMetadata = GConnectionMetadata.GetAnnotation(Connection);
     if (ConnectionMetadata.bSupportsModMessageType) {
-        FNetControlMessage<NMT_ModMessage>::Send(Connection, MessageType.ModReference, MessageType.MessageId, Data);
+        SendControlMessage<NMT_ModMessage>(Connection, MessageType.ModReference, MessageType.MessageId, Data);
         Connection->FlushNet(true);
     } else {
         ConnectionMetadata.PendingMessages.Add({MessageType, Data});
@@ -73,14 +106,14 @@ void UModNetworkHandler::SetConnectionSupportsModMessages(UNetConnection* Connec
     ConnectionMetadata.bSupportsModMessageType = true;
 
     // Let other side know we support mod messages
-    FNetControlMessage<NMT_DebugText>::Send(Connection, GSML_HELLO);
+    SendControlMessage<NMT_DebugText>(Connection, GSML_HELLO);
     Connection->FlushNet(true);
 
     // Send all pending messages now that we know they are supported
     for (const TTuple<FMessageType, FString>& Message : ConnectionMetadata.PendingMessages) {
         FMessageType ModMessageType = Message.Get<0>();
         FString Data = Message.Get<1>();
-        FNetControlMessage<NMT_ModMessage>::Send(Connection, ModMessageType.ModReference, ModMessageType.MessageId, Data);
+        SendControlMessage<NMT_ModMessage>(Connection, ModMessageType.ModReference, ModMessageType.MessageId, Data);
     }
 
     Connection->FlushNet(true);
@@ -180,7 +213,7 @@ void UModNetworkHandler::InitializePatches() {
             // NMT_Hello is only received on the server, sent by UPendingNetGame::SendInitialJoin
             // Initiate the SML handshake
 
-            FNetControlMessage<NMT_DebugText>::Send(Connection, GSML_HELLO);
+            SendControlMessage<NMT_DebugText>(Connection, GSML_HELLO);
             Connection->FlushNet(true);
 
             NetworkHandler->OnClientInitialJoin_Server().Broadcast(Connection);
