@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0.0",
 	"SemVersion": "1.0.0",
-	"GameVersion": ">=491125",
+	"GameVersion": ">=520140",
 	"FriendlyName": "Example Mod",
 	"Description": "A mod demonstrating capabilities of the Satisfactory and SML modding",
 	"Category": "Modding",
@@ -28,7 +28,7 @@
 		{
 			"Name": "SML",
 			"Enabled": true,
-			"SemVersion": "^3.12.0"
+			"SemVersion": "^3.12.1"
 		}
 	]
 }
