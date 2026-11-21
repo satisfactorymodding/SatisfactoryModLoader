@@ -110,7 +110,7 @@ void UWidgetBlueprintHookSlot_Generic::SetupPanelSlot(UPanelSlot* InPanelSlot) {
 		ScaleBoxSlot->SetHorizontalAlignment(HorizontalAlignment);
 		ScaleBoxSlot->SetVerticalAlignment(VerticalAlignment);
 	} else if (UVerticalBoxSlot* VerticalBoxSlot = Cast<UVerticalBoxSlot>(InPanelSlot)) {
-		HorizontalBoxSlot->SetSize(Size);
+		VerticalBoxSlot->SetSize(Size);
 		VerticalBoxSlot->SetPadding(Padding);
 		VerticalBoxSlot->SetHorizontalAlignment(HorizontalAlignment);
 		VerticalBoxSlot->SetVerticalAlignment(VerticalAlignment);
